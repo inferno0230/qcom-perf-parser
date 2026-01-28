@@ -23,7 +23,7 @@ def parse_base_config(filename: str) -> ResourceConfig:
     root = tree.getroot()
     resources = root.find('PerfResources')
     if not resources:
-        print(f"PerfResources not found in {filename}")
+        print(f'PerfResources not found in {filename}')
         sys.exit()
 
     config: ResourceConfig = {}
@@ -59,7 +59,7 @@ def apply_overrides(config: ResourceConfig, filename: str) -> None:
     root = tree.getroot()
     resources = root.find('PerfResources')
     if not resources:
-        print(f"PerfResources not found in {filename}")
+        print(f'PerfResources not found in {filename}')
         sys.exit()
 
     for cfg in resources.findall('Config'):
@@ -69,7 +69,9 @@ def apply_overrides(config: ResourceConfig, filename: str) -> None:
         key: ResourceKey = (major_val, minor_val)
         entry = config.get(key)
         if not entry:
-            print(f"{filename} tries to overwrite ({major_val},{minor_val}) which does not exist in the base config")
+            print(
+                f'{filename} tries to overwrite ({major_val},{minor_val}) which does not exist in the base config'
+            )
             sys.exit()
 
         if 'Node' in cfg.attrib:

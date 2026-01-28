@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Callable, Dict, Iterable, List, Optional, Tuple
 
 
 @dataclass
@@ -25,3 +25,17 @@ class ResourceEntry:
 
 ResourceKey = Tuple[int, int]
 ResourceConfig = Dict[ResourceKey, ResourceEntry]
+
+@dataclass
+class ResourceContext:
+    boost: Boost
+    node: str
+    raw_value: int
+    cluster: int
+
+# Pair consisting of a node path and value, both processed
+ResolvedPair = Tuple[str, str]
+ResourceResolver = Callable[[ResourceContext], Iterable[ResolvedPair]]
+
+# Pair consisting of a node path and value, both processed
+ResourceCombiner = Callable[[List[str]], str]

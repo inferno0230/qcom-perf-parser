@@ -1,9 +1,19 @@
 from perf_parser.parsers import boostsconfig, resourceconfigs
-from perf_parser.models import Boost, BoostKey, ResourceConfig, ResourceEntry
+from perf_parser.models import (
+    Boost,
+    BoostKey,
+    ResourceConfig,
+    ResourceContext,
+    ResourceEntry,
+    ResourceKey,
+)
+from perf_parser.resource_resolvers.mapping import resource_resolvers
+from perf_parser.resource_combiners.mapping import resource_combiners
 import sys
 import os
 import argparse
-from typing import List, Tuple, Optional
+from typing import DefaultDict, List, Tuple, Optional
+from collections import defaultdict
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='QCOM perf config parser')
@@ -65,10 +75,34 @@ if __name__ == '__main__':
             )
             continue
 
-        for opcode, value in boost.resources:
+        grouped_by_path: DefaultDict[Tuple[str, ResourceKey], List[str]] = defaultdict(list)
+        for opcode, raw_value in boost.resources:
             major = (opcode & 0x1FC00000) >> 22
             minor = (opcode & 0x000FC000) >> 14
             cluster = (opcode & 0x00000F00) >> 8
 
-            resource: ResourceEntry = resource_config[(major, minor)]
-            print(f"set {value} on {resource} for cluster {cluster}")
+            resource_key: ResourceKey = (major, minor)
+            resource: ResourceEntry = resource_config[resource_key]
+
+            if not resource.supported:
+                continue
+
+            if not resource.node:
+                print(f'missing node for {resource}')
+                continue
+
+            ctx = ResourceContext(
+                boost=boost,
+                node=resource.node,
+                raw_value=raw_value,
+                cluster=cluster,
+            )
+
+            resolver = resource_resolvers.get(resource_key, lambda ctx: [(ctx.node, ctx.raw_value)])
+            for path, value in resolver(ctx):
+                grouped_by_path[(path, resource_key)].append(value)
+
+        for node, values in grouped_by_path.items():
+            combiner = resource_combiners.get(resource_key, lambda values: values[0])
+            value = combiner(values)
+            print(f'{node} : {value}')
