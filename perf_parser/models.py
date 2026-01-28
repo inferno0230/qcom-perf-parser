@@ -23,6 +23,19 @@ class ResourceEntry:
     node: Optional[str] = None
 
 
+@dataclass
+class ClusterInfo:
+    name: str
+    id: int
+    numCores: int
+
+@dataclass
+class TargetInfo:
+    name: str
+    totalNumCores: int
+    numClusters: int
+    clusters: List[ClusterInfo]
+
 ResourceKey = Tuple[int, int]
 ResourceConfig = Dict[ResourceKey, ResourceEntry]
 
@@ -32,6 +45,7 @@ class ResourceContext:
     node: str
     raw_value: int
     cluster: int
+    target_info: TargetInfo
 
 # Pair consisting of a node path and value, both processed
 ResolvedPair = Tuple[str, str]

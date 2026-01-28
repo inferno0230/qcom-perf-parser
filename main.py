@@ -1,4 +1,4 @@
-from perf_parser.parsers import boostsconfig, resourceconfigs
+from perf_parser.parsers import boostsconfig, resourceconfigs, targetinfo
 from perf_parser.models import (
     Boost,
     BoostKey,
@@ -6,6 +6,7 @@ from perf_parser.models import (
     ResourceContext,
     ResourceEntry,
     ResourceKey,
+    TargetInfo,
 )
 from perf_parser.resource_resolvers.mapping import resource_resolvers
 from perf_parser.resource_combiners.mapping import resource_combiners
@@ -29,6 +30,9 @@ if __name__ == '__main__':
         '-trc', '--targetresourceconfigs', help='Path to targetresourceconfigs.xml', required=False
     )
     parser.add_argument(
+        '-ti', '--targetconfig', help='Path to targetconfig.xml', required=False
+    )
+    parser.add_argument(
         '-t', '--target', help='target platform, for example: volcano', required=True
     )
 
@@ -46,6 +50,9 @@ if __name__ == '__main__':
     targetresourceconfigs_path = argument.targetresourceconfigs or os.path.join(
         argument.dump_path, 'vendor/etc/perf/targetresourceconfigs.xml'
     )
+    targetconfig_path = argument.targetconfig or os.path.join(
+        argument.dump_path, 'vendor/etc/perf/targetconfig.xml'
+    )
 
     # perfboostsconfig.xml and powerhints.xml include all boosts with the resources and values to be set
     perfboosts = boostsconfig.parse_boost_xml(perfboostsconfig_path)
@@ -54,6 +61,20 @@ if __name__ == '__main__':
     # commonresourceconfigs.xml and targetresourceconfigs.xml map the resource major/minor to paths
     resource_config: ResourceConfig = resourceconfigs.parse_base_config(commonresourceconfigs_path)
     resourceconfigs.apply_overrides(resource_config, targetresourceconfigs_path)
+
+    # targetinfo.xml contains information about the clusters
+    targetconfigs = targetinfo.parse_target_info_xml(targetconfig_path)
+    target_info: Optional[TargetInfo] = next(
+        (
+            t
+            for t in targetconfigs
+            if t.name == argument.target
+        ),
+        None,
+    )
+    if target_info is None:
+        print(f"unable to find target info for {argument.target}")
+        sys.exit()
 
     powerhint_map: List[Tuple[BoostKey, str]] = [
         # ((0x00001206, None, None), 'SUSTAINED_PERFORMANCE'),
@@ -101,6 +122,7 @@ if __name__ == '__main__':
                 node=resource.node,
                 raw_value=raw_value,
                 cluster=cluster,
+                target_info=target_info,
             )
 
             resolver = resource_resolvers.get(resource_key, lambda ctx: [(ctx.node, ctx.raw_value)])
