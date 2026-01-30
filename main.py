@@ -130,6 +130,6 @@ if __name__ == '__main__':
                 grouped_by_path[(path, resource_key)].append(value)
 
         for (path, resource_key), values in grouped_by_path.items():
-            combiner = resource_combiners.get(resource_key, lambda values: "FIXME".join(values))
-            value = combiner(values)
+            combiner = resource_combiners.get(resource_key, lambda values, path: "FIXME".join(values))
+            value = combiner(values, path)
             print(f'({path}, {resource_key}): {value}')
