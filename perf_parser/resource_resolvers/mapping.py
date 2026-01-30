@@ -9,5 +9,6 @@ resource_resolvers: Dict[ResourceKey, ResourceResolver] = {
     (0x2, 0x3): walt.resolve_walt_path,
     (0x3, 0x20): lambda x: [],  # unsupported - sched_per_task_boost
     (0x4, 0x0): core_ctl.resolve_lock_min_cores,  # core_ctl - lock_min_cores
+    (0x4, 0x2): cluster.resolve_cpu_cluster,  # core_ctl - enable
     (0x5, 0x11): cluster.resolve_cpu_cluster,  # walt - predictive load
 }
