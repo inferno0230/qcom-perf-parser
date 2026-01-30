@@ -29,9 +29,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-trc', '--targetresourceconfigs', help='Path to targetresourceconfigs.xml', required=False
     )
-    parser.add_argument(
-        '-ti', '--targetconfig', help='Path to targetconfig.xml', required=False
-    )
+    parser.add_argument('-ti', '--targetconfig', help='Path to targetconfig.xml', required=False)
     parser.add_argument(
         '-t', '--target', help='target platform, for example: volcano', required=True
     )
@@ -65,21 +63,21 @@ if __name__ == '__main__':
     # targetinfo.xml contains information about the clusters
     targetconfigs = targetinfo.parse_target_info_xml(targetconfig_path)
     target_info: Optional[TargetInfo] = next(
-        (
-            t
-            for t in targetconfigs
-            if t.name == argument.target
-        ),
+        (t for t in targetconfigs if t.name == argument.target),
         None,
     )
     if target_info is None:
-        print(f"unable to find target info for {argument.target}")
+        print(f'unable to find target info for {argument.target}')
         sys.exit()
 
     powerhint_map: List[Tuple[BoostKey, str]] = [
-        # ((0x00001206, None, None), 'SUSTAINED_PERFORMANCE'),
+        ((0x00001206, None, None), 'SUSTAINED_PERFORMANCE'),
         ((0x00001080, 1, 120), 'INTERACTION'),
-        # ((0x00001081, 10, None), 'LAUNCH'),
+        ((0x00001081, 10, None), 'LAUNCH'),
+        ((0x00001330, None, None), 'CAMERA_STREAMING_LOW'),
+        ((0x00001331, None, None), 'CAMERA_STREAMING_MID'),
+        ((0x00001332, None, None), 'CAMERA_STREAMING_HIGH'),
+        ((0x00001337, None, None), 'CAMERA_LAUNCH'),
     ]
 
     for bk, powerhint_name in powerhint_map:
@@ -125,11 +123,15 @@ if __name__ == '__main__':
                 target_info=target_info,
             )
 
-            resolver = resource_resolvers.get(resource_key, lambda ctx: [(ctx.node, str(ctx.raw_value))])
+            resolver = resource_resolvers.get(
+                resource_key, lambda ctx: [(ctx.node, str(ctx.raw_value))]
+            )
             for path, value in resolver(ctx):
                 grouped_by_path[(path, resource_key)].append(value)
 
         for (path, resource_key), values in grouped_by_path.items():
-            combiner = resource_combiners.get(resource_key, lambda values, path: "FIXME".join(values))
+            combiner = resource_combiners.get(
+                resource_key, lambda values, path: 'FIXME'.join(values)
+            )
             value = combiner(values, path)
             print(f'({path}, {resource_key}): {value}')

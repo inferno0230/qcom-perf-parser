@@ -29,6 +29,7 @@ class ClusterInfo:
     id: int
     numCores: int
 
+
 @dataclass
 class TargetInfo:
     name: str
@@ -36,8 +37,10 @@ class TargetInfo:
     numClusters: int
     clusters: List[ClusterInfo]
 
+
 ResourceKey = Tuple[int, int]
 ResourceConfig = Dict[ResourceKey, ResourceEntry]
+
 
 @dataclass
 class ResourceContext:
@@ -47,9 +50,10 @@ class ResourceContext:
     cluster: int
     target_info: TargetInfo
 
+
 # Pair consisting of a node path and value, both processed
 ResolvedPair = Tuple[str, str]
 ResourceResolver = Callable[[ResourceContext], Iterable[ResolvedPair]]
 
 # Pair consisting of a node path and value, both processed
-ResourceCombiner = Callable[[List[str]], str]
+ResourceCombiner = Callable[[List[str], str], str]

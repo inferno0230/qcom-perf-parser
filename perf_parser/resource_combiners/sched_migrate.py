@@ -3,6 +3,7 @@ from perf_parser.utils.constants import SCHED_MIGRATE_VALUE_UNSET
 from typing import Iterable
 import subprocess
 
+
 def combine_sched_migrate(values: Iterable[str], path: str) -> str:
     first: str = SCHED_MIGRATE_VALUE_UNSET
     second: str = SCHED_MIGRATE_VALUE_UNSET
@@ -28,4 +29,4 @@ def combine_sched_migrate(values: Iterable[str], path: str) -> str:
     if second is SCHED_MIGRATE_VALUE_UNSET:
         second = def_second
 
-    return f"{first} {second}"
+    return f'{first} {second}'
