@@ -1,5 +1,5 @@
 from perf_parser.models import ResourceKey, ResourceResolver
-from perf_parser.resource_resolvers import cluster, core_ctl, msm_perf, walt
+from perf_parser.resource_resolvers import cluster, core_ctl, gpu, hyst, msm_perf, walt
 from typing import Dict
 
 resource_resolvers: Dict[ResourceKey, ResourceResolver] = {
@@ -11,4 +11,11 @@ resource_resolvers: Dict[ResourceKey, ResourceResolver] = {
     (0x4, 0x0): core_ctl.resolve_lock_min_cores,  # core_ctl - lock_min_cores
     (0x4, 0x2): cluster.resolve_cpu_cluster,  # core_ctl - enable
     (0x5, 0x11): cluster.resolve_cpu_cluster,  # walt - predictive load
+    (0x6, 0x3): hyst.resolve_hyst_opt_path,  # CPUBW_HWMON_HYST_OPT_OPCODE
+    (0x6, 0xE): hyst.resolve_hyst_opt_path,  # CPU_LLCC_BW_HYST_OPT
+    (0x6, 0x17): hyst.resolve_hyst_opt_path,  # GOLD_CPU_LLCC_BW_HYST_OPT
+    (0xA, 0x3): gpu.resolve_next_gpu_freq,  # gpu - min freq
+    (0xA, 0x4): gpu.resolve_next_gpu_freq,  # gpu - max freq
+    (0xC, 0x2): hyst.resolve_hyst_opt_path,  # LLCBW_HWMON_HYST_OPT_OPCODE
+    (0xC, 0x9): hyst.resolve_hyst_opt_path,  # LLCC_DDR_BW_HYST_OPT
 }
