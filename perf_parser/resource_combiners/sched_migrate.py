@@ -2,19 +2,14 @@ from perf_parser.models import ResourceContext
 from perf_parser.utils.constants import SCHED_MIGRATE_VALUE_UNSET
 from typing import Iterable
 import subprocess
+import sys
 
 
 def combine_sched_migrate(values: Iterable[str], path: str) -> str:
     first: str = SCHED_MIGRATE_VALUE_UNSET
     second: str = SCHED_MIGRATE_VALUE_UNSET
-    for value in values:
-        a, b = value.split()
-        if a is not SCHED_MIGRATE_VALUE_UNSET:
-            first = a
-        if b is not SCHED_MIGRATE_VALUE_UNSET:
-            second = b
 
-    def_first, def_second = subprocess.check_output(
+    set_values = subprocess.check_output(
         [
             'adb',
             'shell',
@@ -22,11 +17,11 @@ def combine_sched_migrate(values: Iterable[str], path: str) -> str:
             path,
         ],
         text=True,
-    ).split()[:2]
+    ).split()
 
-    if first is SCHED_MIGRATE_VALUE_UNSET:
-        first = def_first
-    if second is SCHED_MIGRATE_VALUE_UNSET:
-        second = def_second
+    for s in values:
+        for i, value in enumerate(s.split()):
+            if value != SCHED_MIGRATE_VALUE_UNSET:
+                set_values[i] = value
 
-    return f'{first} {second}'
+    return ' '.join(set_values[: len(values[0].split())])
