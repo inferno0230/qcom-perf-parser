@@ -1,4 +1,5 @@
 from powerhint_json.models import Node, DefaultGetter
+from typing import OrderedDict
 import subprocess
 
 
@@ -41,8 +42,10 @@ def create_node_msm_perf(
     sorted_values = sorted(
         values, key=lambda s: [[int(x) for x in cpu_value.split(':')] for cpu_value in s.split()]
     )
-    return {
-        'Name': name,
-        'Path': path,
-        'Values': [default_value] + sorted_values,
-    }
+    return OrderedDict(
+        [
+            ('Name', name),
+            ('Path', path),
+            ('Values', [default_value] + sorted_values),
+        ]
+    )

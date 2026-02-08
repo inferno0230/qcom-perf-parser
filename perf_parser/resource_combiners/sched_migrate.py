@@ -1,11 +1,11 @@
 from perf_parser.models import ResourceContext
 from perf_parser.utils.constants import SCHED_MIGRATE_VALUE_UNSET
-from typing import Iterable
+from typing import List
 import subprocess
 import sys
 
 
-def combine_sched_migrate(values: Iterable[str], path: str) -> str:
+def combine_sched_migrate(values: List[str], path: str) -> str:
     first: str = SCHED_MIGRATE_VALUE_UNSET
     second: str = SCHED_MIGRATE_VALUE_UNSET
 

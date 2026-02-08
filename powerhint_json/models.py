@@ -1,7 +1,7 @@
 from typing import Callable, List, OrderedDict
 
 
-Node = OrderedDict[str, str | List[str]]
+Node = OrderedDict[str, str | int | bool | List[str]]
 Action = OrderedDict[str, str | int]
 
 # Creates a node given the name, path and set of values

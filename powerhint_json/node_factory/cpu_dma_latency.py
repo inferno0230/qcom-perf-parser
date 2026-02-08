@@ -1,5 +1,6 @@
 from powerhint_json.models import Node
 from powerhint_json.node_factory.default import create_node_default
+from typing import OrderedDict
 import subprocess
 
 
@@ -19,9 +20,11 @@ def create_node(name: str, path: str, values: set[str]) -> Node:
         values.remove(default_value)
     sorted_values = sorted(values)
 
-    return {
-        'Name': name,
-        'Path': path,
-        'Values': [default_value] + sorted_values,
-        'HoldFd': True,
-    }
+    return OrderedDict(
+        [
+            ('Name', name),
+            ('Path', path),
+            ('Values', [default_value] + sorted_values),
+            ('HoldFd', True),
+        ]
+    )
