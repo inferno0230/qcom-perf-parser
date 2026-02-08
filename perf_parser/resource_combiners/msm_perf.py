@@ -3,4 +3,5 @@ from typing import Iterable
 
 
 def combine_msm_perf(values: Iterable[str], path: str) -> str:
-    return ' '.join(v for v in values)
+    sorted_values = sorted(values, key=lambda s: int(s.split(':')[0]))
+    return ' '.join(v for v in sorted_values)
