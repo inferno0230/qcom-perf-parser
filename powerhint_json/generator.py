@@ -1,4 +1,5 @@
 import json
+import re
 from collections import defaultdict
 from typing import Dict, List, OrderedDict
 
@@ -51,6 +52,9 @@ def generate_powerhint_json(powerhints: List[PowerHint], path: str) -> None:
         values = {action[1] for action in actions}
 
         factory: NodeFactory = node_factories.get(node_path, create_node)
+        if node_path == 'StorageNode_path_is_figured_out_based_on_the_target_device' or re.match(r'^SPECIAL_NODE.*', node_path):
+            print(f"Ignoring node {node_path}.")
+            continue
         ph_nodes.append(factory(node_name, node_path, values))
 
     ph_json['Nodes'] = ph_nodes
